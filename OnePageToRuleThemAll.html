@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" ng-app="MyDemoApp">
+
+<head>
+    <title>Boîte aux lettres connectée</title>
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.1.min.js"></script>
+    <script type="text/javascript" src="https://cdn.myconstellation.io/js/Constellation-1.8.1.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+    <script type="text/javascript" src="https://cdn.myconstellation.io/js/ngConstellation-1.8.1.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/mixitup/2.1.11/jquery.mixitup.min.js"></script>
+   
+    <script>
+	
+<!-- Commun />	
+		var ipadd = "172.20.10.2";
+		
+	
+        var myDemoApp = angular.module('MyDemoApp', ['ngConstellation']);
+        myDemoApp.controller('MyController', ['$scope',  'constellationConsumer', function ($scope, constellation) {
+	
+		constellation.initializeClient("http://"+ipadd+":8088", "123", "Giulietta");
+		
+		$scope.bal = {};
+		$scope.Name = ipadd;
+		$scope.current = "x";
+
+
+		constellation.onConnectionStateChanged(function (change) {
+			if (change.newState === $.signalR.connectionState.connected) {
+			
+				console.log("Je suis connecté");
+				$scope.Isconnected = true;
+				$scope.NbPhoto = [0,1,2];
+				
+				constellation.registerStateObjectLink("*", "BalancePackage", "Balance", "*", function (so) {
+					$scope.$apply(function() {
+						$scope.bal = so;
+					});
+				});
+				
+				$scope.acceuil;
+				$scope.controle;
+				$scope.archives;
+				
+				$scope.$apply(function() {
+					$scope.current = "0";	
+				});
+
+			}
+			else 
+			{
+				console.log("Je ne suis pas connecté");
+				$scope.Isconnected = false;
+			}
+			$scope.$apply();
+		});
+		
+		
+		constellation.connect();
+		
+		$scope.takePhoto = function () {
+			constellation.sendMessage({ Scope: 'Package', Args: ['PackCamera'] }, 'TakePhotoXX', {});
+		}
+	
+		$scope.SetCameraDelaiMesure = function () {
+			constellation.sendMessage({ Scope: 'Package', Args: ['PackBalance'] }, 'SetDelaiMesure', [ $scope.delaiMesure ]);
+		};
+		
+		$scope.SetCameraDelaiPhoto = function () {
+			constellation.sendMessage({ Scope: 'Package', Args: ['PackCamera'] }, 'SetDelaiPhoto', [ $scope.delaiPhoto ]);
+		};
+		            
+
+		
+		 
+		$scope.acceuil = function (){
+			$scope.current = "0";
+			$scope.$apply;
+		}
+		
+		$scope.controle = function (){
+			$scope.current = "1";
+			$scope.$apply;
+		}
+		
+		$scope.archives = function (){
+			$scope.current = "2";
+			$scope.$apply;
+		}
+		
+        }]);
+    </script>
+ 
+ 
+ 
+ 	<script>
+	
+		$(function() {
+				$('img').on('click', function() {
+					$('.enlargeImageModalSource').attr('src', $(this).attr('src'));
+					$('#enlargeImageModal').modal('show');
+				});
+		});
+
+	</script>		
+	
+	<style>
+	
+	img {
+		cursor: zoom-in;
+	}
+	
+	</style>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+</head>
+
+
+<body ng-controller="MyController" onload="$archives();">
+
+
+	
+<!-- Alerte: Etat de connexion> </!-->	
+	<div ng-show=!Isconnected>
+		<div class="alert alert-danger" role="alert">
+			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+			<span class="sr-only">Error:</span>
+			Je ne suis connecté à aucune constellation.
+			</div>
+	</div>
+	<div ng-show=Isconnected>
+		<div class="alert alert-success" role="alert">
+			<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+			<span class="sr-only">Success:</span>
+			Je suis connecté à la constellation.
+			</div>
+	</div>	
+<!-- Titre> 
+	<h1>Page Angular pour la boîte aux lettres.</h1>
+</!-->
+<!-- Etat de connection> </!-->	
+	<div ng-show=Isconnected>
+		<div class="well">
+			<h3>Vous êtes connecté sur {{ Name }}.  </h3>	
+		</div>
+	</div>	
+	
+<div class="dropdown" ng-hide="Isconnected === false">
+  <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+    Menu
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="#" ng-click="controle()">Contrôle</a></li>
+    <li><a href="#" ng-click="archives()">Archives</a></li>
+  </ul>
+</div>
+
+	
+<!-- Login Page> </!-->	
+	<div class="well" ng-hide="Isconnected === true">
+		<h1>Page de connexion</h1>
+		<p></p>
+		<div class="col-md-6 col-md-offset-3">
+			<h2>Login</h2>
+			<form name="form" ng-submit="vm.login()" role="form">
+				<div class="form-group" ng-class="{ 'has-error': form.ipadd.$dirty && form.ipadd.$error.required }">
+					<label for="IPadd">IPv4 address</label>
+					<div class="input-group">
+						<span class="input-group-addon" role="group">http://</span>
+						<input type="text" class="form-control" ng-model="ipadd" id="ipadd" aria-describedby="ipadd" placeholder="IPv4 address" aria-label="IP address">
+						<span class="input-group-addon">:8088</span>
+						<span ng-show="form.ipadd.$dirty && form.ipadd.$error.required" class="help-block">IP URL is required</span>
+					</div>
+				</div>
+				<div class="form-group" ng-class="{ 'has-error': form.username.$dirty && form.username.$error.required }">
+					<label for="username">Credential Key Name</label>
+					<input type="text" name="username" id="username" class="form-control" ng-model="vm.username" placeholder="Username" required />
+					<span ng-show="form.username.$dirty && form.username.$error.required" class="help-block">Username is required</span>
+				</div>
+				<div class="form-group" ng-class="{ 'has-error': form.password.$dirty && form.password.$error.required }">
+					<label for="password">Credential Acess Key</label>
+					<input type="password" name="password" id="password" class="form-control" ng-model="vm.password" placeholder="Password" required />
+					<span ng-show="form.password.$dirty && form.password.$error.required" class="help-block">Password is required</span>
+				</div>
+				<div class="form-actions">
+					<button type="submit" ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-primary">Login</button>
+					<img ng-if="vm.dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+					<a href="#!/register" class="btn btn-link">Register ?! (WTF ??)</a>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	
+<!-- Saisie de l'IP de la Constellation>	
+	<div class="container" ng-hide="Isconnected === false">
+		<label for="IP URL">Change your constellation's IP:</label>
+		<div class="input-group">
+			<span class="input-group-addon">http://</span>
+			<input type="text" class="form-control" ng-model="ipadd" id="ipadd" aria-describedby="ipadd" placeholder="IPv4 address" aria-label="IP address">
+			<span class="input-group-addon">:8088</span>
+			<span ng-show="form.ipadd.$dirty && form.ipadd.$error.required" class="help-block">IP URL is required</span>
+		</div>
+	</div>
+	<br></br>	
+</!-->		
+	
+<!-- Cadre photo de la dernière> </!-->	
+	<div class="album text-muted" ng-hide="Isconnected === false">
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="card" style="width: auto;">
+						<div class="card-block">
+							<h3 class="card-title">Dernière photo prise:</h3>
+							<img class="img-responsive" src="C:/Users/qkame_000/Pictures/shards_stone_background_light_85542_1920x1080.jpg" alt="Card image cap">
+							<p class="card-text"><object data="C:/Users/qkame_000/Pictures/Photos/0.txt" type="text/html" width="500" height="100"></object></p>
+						</div>
+					</div>
+				</div>	
+			</div>
+		</div>
+	</div>	
+	
+	<br></br>	
+	
+
+	
+<!-- Affichage des StateObjects> </!-->		
+<div class="panel" ng-hide="'Isconnected === false" ng_show="current === '1'">
+	<div class="panel panel-info" >
+		<div class="panel-heading"><h3>State Objects</h3></div>
+		<div class="panel-body">
+			<p>Vous trouverez ci-dessous la liste de tous les State Objects disponibles sur la constellation {{Name}} :</p>
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th>Sentinelle</th>
+						<th>Package</th>
+						<th>Name</t>
+						<th> = </th>
+						<th>Value</th> 
+						<th>Unit</th>
+					</tr>
+				</thead>
+				<tbody>
+					<td>{{ bal.SentinelName }}</td>
+					<td>{{ bal.PackageName }}</td>
+					<th>{{ bal.Name }}</th>
+					<td> = </td>
+					<td>{{ bal.Value.Value }}</td> 
+					<td>{{ bal.Value.Unit }}</td>
+				</tbody>
+			</table>
+		</div>
+	</div>
+<!-- Bouton de Message Callback "TakePhoto"> </!-->	
+	<div class="panel panel-info" ng-hide="Isconnected === false" ng_show="current === '1'">
+		<div class="panel-heading"><h3>Message Callbacks</h3></div>
+		<div class="panel-body">
+			<p>Vous trouverez ci-dessous la liste de tous les Message Callbacks disponibles sur la constellation {{Name}} :</p>
+			<ul>
+			<button ng-click="takePhoto()" type="button" class="btn btn-primary btn-lg">
+				<span class="glyphicon glyphicon-camera"> <b>Cheese !</b> </span>
+			</button>
+			</ul>
+		</div>
+	</div>
+</div>	
+	
+	
+<!-- Saisie des Settings> 		
+	<div class="panel-info" ng-hide="Isconnected === false" ng_show="current === '1'">
+		<div class="panel-heading"><h3>Settings</h3></div>
+		<div class="panel-body">
+			<p>Vous trouverez ci-dessous la liste de tous les Settings modifiables sur la constellation {{Name}} :</p>
+			<ul>
+			Mesure toute les : <input type="number" ng-model="delaiMesure" /> secondes
+			<br></br>
+			<button ng-click="SetCameraDelaiMesure()">Set timing of mesure</button>
+			<br></br>
+			Photo toute les : <input type="number" ng-model="delaiPhoto" /> secondes
+			<br></br>
+			<button ng-click="SetCameraDelaiPhoto()">Set timing of photo</button>
+			<br></br>
+			</ul>
+		</div>
+	</div>
+</!-->	
+
+	
+<!-- Modal Pop Up> </!-->	
+	<div class="modal fade" id="enlargeImageModal" tabindex="-1" role="dialog" aria-labelledby="enlargeImageModal" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+		  <div class="modal-content">
+			<div class="modal-body">
+			  <img src="" class="enlargeImageModalSource" style="width: 100%;">
+			</div>
+		  </div>
+		</div>
+	</div>
+
+
+<!-- Album Photo> <!-->
+<div class="panel" ng_show="current === '2'" ng-hide="Isconnected === false">
+	<div class="album text-muted">
+		<li>
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-4">
+						<div class="card" style="width: auto;">
+							<div class="card-block">
+								<h3 class="card-title">Photo n° 1</h3>
+								<img class="img-responsive" src="/home/pi/Documents/FileCamera/photo/archives/1.jpg" alt="Card image cap">
+							<p class="card-text"><object data="/home/pi/Documents/FileCamera/photo/archives/1.txt"></object></p>							</div>
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<div class="card" style="width: auto;">
+							<div class="card-block">
+								<h3 class="card-title">Photo n° 2</h3>
+								<img class="img-responsive" src="C:/Users/qkame_000/Pictures/Photos/téléchargement.jpg" alt="Card image cap">
+							<p class="card-text"><object data="C:/Users/qkame_000/Pictures/Photos/0.txt"></object></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<div class="card" style="width: auto;">
+							<div class="card-block">
+								<h3 class="card-title">Photo n° 3</h3>
+								<img class="img-responsive" src="C:/Users/qkame_000/Pictures/Photos/téléchargement.jpg" alt="Card image cap">
+							<p class="card-text"><object data="C:/Users/qkame_000/Pictures/Photos/0.txt"></object></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</li>	
+		<li>
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-4">
+						<div class="card" style="width: auto;">
+							<div class="card-block">
+								<h3 class="card-title">Photo n° 4</h3>
+								<img class="img-responsive" src="C:/Users/qkame_000/Pictures/Photos/téléchargement.jpg" alt="Card image cap">
+							<p class="card-text"><object data="C:/Users/qkame_000/Pictures/Photos/0.txt"></object></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<div class="card" style="width: auto;">
+							<div class="card-block">
+								<h3 class="card-title">Photo n° 5</h3>
+								<img class="img-responsive" src="C:/Users/qkame_000/Pictures/Photos/téléchargement.jpg" alt="Card image cap">
+							<p class="card-text"><object data="C:/Users/qkame_000/Pictures/Photos/0.txt"></object></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<div class="card" style="width: auto;">
+							<div class="card-block">
+								<h3 class="card-title">Photo n° 6</h3>
+								<img class="img-responsive" src="C:/Users/qkame_000/Pictures/Photos/téléchargement.jpg" alt="Card image cap">
+							<p class="card-text"><object data="C:/Users/qkame_000/Pictures/Photos/0.txt"></object></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</li>	
+		<li>
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-4">
+						<div class="card" style="width: auto;">
+							<div class="card-block">
+								<h3 class="card-title">Photo n° 7</h3>
+								<img class="img-responsive" src="C:/Users/qkame_000/Pictures/Photos/téléchargement.jpg" alt="Card image cap">
+							<p class="card-text"><object data="C:/Users/qkame_000/Pictures/Photos/0.txt"></object></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<div class="card" style="width: auto;">
+							<div class="card-block">
+								<h3 class="card-title">Photo n° 8</h3>
+								<img class="img-responsive" src="C:/Users/qkame_000/Pictures/Photos/téléchargement.jpg" alt="Card image cap">
+							<p class="card-text"><object data="C:/Users/qkame_000/Pictures/Photos/0.txt"></object></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<div class="card" style="width: auto;">
+							<div class="card-block">
+								<h3 class="card-title">Photo n° 9</h3>
+								<img class="img-responsive" src="C:/Users/qkame_000/Pictures/Photos/téléchargement.jpg" alt="Card image cap">
+							<p class="card-text"><object data="C:/Users/qkame_000/Pictures/Photos/0.txt"></object></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</li>	
+	</div>	
+</div>	
+
+
+</body>
+
+
+
+
+
+
+
+</html>
