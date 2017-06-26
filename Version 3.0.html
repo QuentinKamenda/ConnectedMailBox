@@ -129,7 +129,7 @@
 <body ng-controller="MyController" onload="$archives();">
 
 
-<!-- Alerte: Etat de connexion> 
+<!-- Alerte: Etat de connexion> </!-->	
 	<div ng-show=!Isconnected>
 		<div class="alert alert-danger" role="alert">
 			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -144,7 +144,7 @@
 			Je suis connecté à la constellation.
 			</div>
 	</div>	
-</!-->	
+
 	
 <!-- Titre> 
 	<h1>Page Angular pour la boîte aux lettres.</h1>
@@ -152,9 +152,11 @@
 
 <!-- Etat de connection> </!-->	
 	<div ng-show=Isconnected>
-		<div class="well">
-			<h3>Vous êtes connecté sur {{ Name }}.  </h3>	
-		</div>
+		<div class="col-sm-12">
+			<div class="well" >
+				<h3>Vous êtes connecté à votre boîte aux lettres.  </h3>	
+			</div>
+		</div>	
 	</div>	
 	
 <!-- Bouton du menu déroulant pour le choix de page> </!-->	
